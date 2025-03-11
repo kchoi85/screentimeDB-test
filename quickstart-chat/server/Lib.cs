@@ -2,7 +2,7 @@ using SpacetimeDB;
 
 public static partial class Module
 {
-    [SpacetimeDB.Table]
+    [SpacetimeDB.Table(Name = "Person", Public = true)]
     public partial struct Person
     {
         [SpacetimeDB.AutoInc]
@@ -29,5 +29,5 @@ public static partial class Module
         Log.Info("Hello, World!");
     }
 
-    
+
 }

@@ -34,8 +34,6 @@ import {
 // Import and reexport all reducer arg types
 import { Add } from "./add_reducer.ts";
 export { Add };
-import { GetUsers } from "./get_users_reducer.ts";
-export { GetUsers };
 import { SayHello } from "./say_hello_reducer.ts";
 export { SayHello };
 
@@ -59,10 +57,6 @@ const REMOTE_MODULE = {
     Add: {
       reducerName: "Add",
       argsType: Add.getTypeScriptAlgebraicType(),
-    },
-    GetUsers: {
-      reducerName: "GetUsers",
-      argsType: GetUsers.getTypeScriptAlgebraicType(),
     },
     SayHello: {
       reducerName: "SayHello",
@@ -96,7 +90,6 @@ const REMOTE_MODULE = {
 // A type representing all the possible variants of a reducer.
 export type Reducer = never
 | { name: "Add", args: Add }
-| { name: "GetUsers", args: GetUsers }
 | { name: "SayHello", args: SayHello }
 ;
 
@@ -119,18 +112,6 @@ export class RemoteReducers {
     this.connection.offReducer("Add", callback);
   }
 
-  getUsers() {
-    this.connection.callReducer("GetUsers", new Uint8Array(0), this.setCallReducerFlags.getUsersFlags);
-  }
-
-  onGetUsers(callback: (ctx: ReducerEventContext) => void) {
-    this.connection.onReducer("GetUsers", callback);
-  }
-
-  removeOnGetUsers(callback: (ctx: ReducerEventContext) => void) {
-    this.connection.offReducer("GetUsers", callback);
-  }
-
   sayHello() {
     this.connection.callReducer("SayHello", new Uint8Array(0), this.setCallReducerFlags.sayHelloFlags);
   }
@@ -149,11 +130,6 @@ export class SetReducerFlags {
   addFlags: CallReducerFlags = 'FullUpdate';
   add(flags: CallReducerFlags) {
     this.addFlags = flags;
-  }
-
-  getUsersFlags: CallReducerFlags = 'FullUpdate';
-  getUsers(flags: CallReducerFlags) {
-    this.getUsersFlags = flags;
   }
 
   sayHelloFlags: CallReducerFlags = 'FullUpdate';

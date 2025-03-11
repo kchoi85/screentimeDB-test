@@ -8,6 +8,28 @@ export type PrettyMessage = {
   text: string;
 };
 
+function usePersons(conn: DbConnection | null) {
+  const [persons, setPersons] = useState<Person[]>([]);
+
+  useEffect(() => {
+    if (!conn) return;
+
+    // const onInsert = (_ctx: any, person: Person) => {
+    //   setPersons((prev) => {
+    //     prev.set(person.id, person);
+    //     return prev;
+    //   });
+    // };
+    // conn?.db?.person?.onInsert(onInsert);
+
+    // return () => {
+    //   conn?.db?.person?.removeOnInsert(onInsert);
+    // };
+  }, [conn]);
+
+  return persons;
+}
+
 function App() {
   const [newName, setNewName] = useState('');
   const [settingName, setSettingName] = useState(false);
@@ -28,13 +50,13 @@ function App() {
       for (const query of queries) {
         conn
           ?.subscriptionBuilder()
-          .onApplied(() => {
-            count++;
-            if (count === queries.length) {
-              console.log('SDK client cache initialized.');
-            }
-          })
-          .subscribe(query);
+          // ?.onApplied(() => {
+          //   count++;
+          //   if (count === queries.length) {
+          //     console.log('SDK client cache initialized.');
+          //   }
+          // })
+          ?.subscribe(query);
       }
     };
 
@@ -86,28 +108,19 @@ function App() {
     e.preventDefault();
     setNewMessage('');
     // TODO: Call `sendMessage` reducer
-    conn?.reducers?.add('yo1', 27);
-    const test = conn?.reducers?.sayHello();
-    console.log('test', test);
   };
 
-  function usePersons(conn: DbConnection | null) {
-    const [persons, setPersons] = useState<Person[]>([]);
-    useEffect(() => {
-      if (!conn) return;
-      const onInsert = (_ctx: any, person: Person) => {
-        setPersons((prev) => new Map(prev.set(person.id, person)));
-      };
-      conn?.db?.person?.onInsert(onInsert);
-
-      return () => {
-        conn?.db?.person?.removeOnInsert(onInsert);
-      };
-    }, [conn]);
-    return persons;
-  }
-  const persons = usePersons(conn);
+  // const persons = usePersons(conn);
+  const persons = conn?.db?.person?.iter();
   console.log('persons', persons);
+
+  if (!conn || !connected || !identity) {
+    return (
+      <div className="App">
+        <h1>Connecting...</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="App">
@@ -138,17 +151,12 @@ function App() {
       </div>
       <div className="message">
         <h1>Messages</h1>
-        {prettyMessages.length < 1 && <p>No messages</p>}
-        <div>
-          {prettyMessages.map((message, key) => (
-            <div key={key}>
-              <p>
-                <b>{message.senderName}</b>
-              </p>
-              <p>{message.text}</p>
-            </div>
-          ))}
-        </div>
+        {persons?.map((person: Person) => (
+          <div key={person.id}>
+            <p>{person.name}</p>
+            <p>{person.age}</p>
+          </div>
+        ))}
       </div>
       {/* <div className="system" style={{ whiteSpace: 'pre-wrap' }}>
         <h1>System</h1>
