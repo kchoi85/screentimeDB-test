@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@clockworklabs/spacetimedb-sdk": "^1.0.2"
+  }
+}
